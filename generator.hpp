@@ -30,7 +30,6 @@ struct _promise_base {
     void unhandled_exception(){};
 
     T value;
-    generator<T, R> *gen;
 };
 
 template <typename T, typename R>
@@ -86,7 +85,7 @@ struct generator {
         [[nodiscard]] T &&operator*() {
             return std::move(handle->promise().value);
         }
-        bool operator==(iterator &it) {
+        bool operator==(iterator const &it) const {
             return it.is_sentinel && handle->done();
         }
         void operator++() { (*handle)(); }
@@ -99,13 +98,12 @@ struct generator {
     };
 
     ~generator() { handle.destroy(); }
-    generator(generator<T, R> &other)
+    generator(const generator<T, R> &other)
         : handle(std::coroutine_handle<promise_type>::from_promise(
               other.handle.promise())) {}
-    generator(std::coroutine_handle<promise_type> h) : handle(h) {
-        h.promise().gen = this;
-    }
+    generator(generator<T, R> &&other)
+        : handle(std::coroutine_handle<promise_type>::from_promise(
+              other.handle.promise())) {}
+    generator(std::coroutine_handle<promise_type> h) : handle(h) {}
 };
 }  // namespace base
-
-

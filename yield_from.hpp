@@ -15,26 +15,29 @@ struct yield_from {
                         void>;
     using _generator_promise = generator::promise_type;
 
-    using _iterator = Range::iterator;
+    Range &rng;
 
-    _iterator begin;
-    _iterator end;
-
-    std::coroutine_handle<_generator_promise> dst_handle;
-
-    bool await_ready() { return begin != end; }
+    bool await_ready() { return rng.begin() == rng.end(); }
 
     void await_suspend(auto h) {
-        dst_handle = h;
-        for (auto it = begin; it != end; it++) {
-            std::cout << "what\n";
-            dst_handle.promise().yield_value(*it);
+        std::cout << "suspended\n";
+        for (auto i : rng) {
+            std::cout << "value coming through\n";
+            h.promise().yield_value(i);
+            std::cout << "value yielded\n";
         }
     }
 
     void await_resume() {}
 
     yield_from(yield_from<Range> &) = default;
-    yield_from(Range &rng) : begin(rng.begin()), end(rng.end()) {}
-    yield_from(Range &&rng) : begin(rng.begin()), end(rng.end()) {}
+    yield_from(Range &rng) : rng(rng) {}
+    yield_from(Range &&rng) : rng(rng) {}
 };
+
+// template <typename T> yield_from(std::initializer_list<T>) -> yield_from<std::initializer_list<T>>;
+
+// template<typename T>
+// base::generator<T, void> yield_from(std::forward_iterator auto begin, std::forward_iterator auto end) {
+    
+// }
