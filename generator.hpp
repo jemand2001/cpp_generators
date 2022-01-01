@@ -1,6 +1,5 @@
 
-#ifndef GENERATOR_HPP
-#define GENERATOR_HPP
+#pragma once
 
 #include <optional>
 #include <iterator>
@@ -109,4 +108,4 @@ struct generator {
 };
 }  // namespace base
 
-#endif
+
