@@ -23,7 +23,6 @@ struct _promise_base {
     std::suspend_never initial_suspend() { return {}; }
     std::suspend_always final_suspend() noexcept { return {}; }
     std::suspend_always yield_value(T v) {
-        // std::cout << "yielding value: " << v << '\n';
         _values.push_back(v);
         return {};
     }
@@ -45,7 +44,6 @@ struct promise_type : public _promise_base<T, R> {
         return {std::coroutine_handle<pt>::from_promise(*this)};
     }
     void return_value(T v) {
-        // std::cout << "returning value: " << v << '\n';
         ret_val = v;
     }
 
@@ -66,7 +64,6 @@ struct generator {
     struct iterator;
 
     using promise_type = base::promise_type<T, R>;
-    // using member_type = T;
 
     iterator begin() { return {&handle, false}; }
     iterator end() { return {nullptr, true}; }
@@ -94,11 +91,9 @@ struct generator {
                    handle->promise().empty();
         }
         void operator++() {
-            // std::cout << "inc\n";
             handle->promise().increment();
             if (!handle->done())
                 (*handle)();
-            // std::cout << "post inc\n";
         }
         void operator++(int x) {
             for (int i = 0; i < x; i++) {
