@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include <optional>
+#include <deque>
 #include <iterator>
-// #include <map>
+#include <optional>
 
 namespace base {
 /**
@@ -24,12 +24,18 @@ struct _promise_base {
     std::suspend_always final_suspend() noexcept { return {}; }
     std::suspend_always yield_value(T v) {
         // std::cout << "yielding value: " << v << '\n';
-        value = v;
+        _values.push_back(v);
         return {};
     }
     void unhandled_exception(){};
+    T value() { return _values.front(); }
 
-    T value;
+    void increment() { _values.pop_front(); }
+
+    bool empty() const { return _values.empty(); }
+
+   private:
+    std::deque<T> _values;
 };
 
 template <typename T, typename R>
@@ -79,23 +85,31 @@ struct generator {
     struct iterator {
         using value_type = T;
         using iterator_category = std::forward_iterator_tag;
-        using reference = T&;
+        using reference = T &;
         using difference_type = size_t;
 
-        [[nodiscard]] T &&operator*() {
-            return std::move(handle->promise().value);
-        }
+        [[nodiscard]] T operator*() { return handle->promise().value(); }
         bool operator==(iterator const &it) const {
-            return it.is_sentinel && handle->done();
+            return it.is_sentinel && handle->done() &&
+                   handle->promise().empty();
         }
-        void operator++() { (*handle)(); }
-        void operator++(int x) {
-            for (int i = 0; i < x; i++)
+        void operator++() {
+            // std::cout << "inc\n";
+            handle->promise().increment();
+            if (!handle->done())
                 (*handle)();
+            // std::cout << "post inc\n";
+        }
+        void operator++(int x) {
+            for (int i = 0; i < x; i++) {
+                (*this)++;
+            }
         }
         std::coroutine_handle<promise_type> *handle;
         bool is_sentinel;
     };
+
+    /// TODO make the handle a shared_ptr somehow, because this isn't working
 
     ~generator() { handle.destroy(); }
     generator(const generator<T, R> &other)
