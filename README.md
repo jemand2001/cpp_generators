@@ -38,3 +38,5 @@ generator<int> f() {
     co_await yield_from(a);
 }
 ```
+
+If `Range` is a generator with a non-void return type, `co_await yield_from(gen)` returns the generator's return value.
