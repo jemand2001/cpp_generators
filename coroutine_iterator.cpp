@@ -49,7 +49,6 @@ int main() {
     std::cout << '\n';
 
     for (int i : yield_from_test()) {
-        std::cout << "hello\n";
         std::cout << i << '\n';
     }
 

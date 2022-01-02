@@ -25,11 +25,8 @@ struct yield_from {
     bool await_ready() { return rng.begin() == rng.end(); }
 
     bool await_suspend(std::coroutine_handle<_generator_promise> h) {
-        std::cout << "suspended\n";
         for (auto i : rng) {
-            std::cout << "value coming through\n";
             h.promise().yield_value(i);
-            std::cout << "value yielded\n";
         }
         return true;
     }
