@@ -6,13 +6,14 @@
 
 #include <iostream>
 #include <iterator>
-// #include <ranges>
 
-// template <typename T, typename R>
-// base::generator<int> yield_1(std::coroutine_handle<typename generator<T, R>::promise_type> out) {
-
-// }
-
+/**
+ * @brief yield the elements of a range in order
+ * this should behave similarly to python's `yield from`
+ * 
+ * usage: `co_await yield_from(my_range);`
+ * @tparam Range the type of the range to yield from
+ */
 template <typename Range>
 struct yield_from {
     using value_type = std::remove_reference_t<
@@ -37,12 +38,3 @@ struct yield_from {
     yield_from(Range &rng) : rng(rng) {}
     yield_from(Range &&rng) : rng(rng) {}
 };
-
-// template <typename T> yield_from(std::initializer_list<T>) ->
-// yield_from<std::initializer_list<T>>;
-
-// template<typename T>
-// base::generator<T, void> yield_from(std::forward_iterator auto begin,
-// std::forward_iterator auto end) {
-
-// }
