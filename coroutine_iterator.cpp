@@ -8,24 +8,16 @@
 using namespace base;
 
 generator<int> void_iterator() {
-    // std::cout << "beginning\n";
     co_yield 1;
-    // std::cout << "after 1st yield\n";
     co_yield 2;
-    // std::cout << "after 2nd yield\n";
     co_yield 3;
-    // std::cout << "after 3rd yield\n";
     co_return;
 }
 
 generator<int, int> non_void_iterator() {
-    // std::cout << "beginning\n";
     co_yield 1;
-    // std::cout << "after 1st yield\n";
     co_yield 2;
-    // std::cout << "after 2nd yield\n";
     co_yield 3;
-    // std::cout << "after 3rd yield\n";
     co_return 12;
 }
 
@@ -65,7 +57,7 @@ int main() {
     for (int i : g2) {
         std::cout << i << '\n';
     }
-    std::cout << "return value: " << g.return_value() << '\n';
+    std::cout << "return value: " << g2.return_value() << '\n';
 
     return 0;
 }
