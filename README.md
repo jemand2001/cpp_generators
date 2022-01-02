@@ -1,7 +1,7 @@
 # cpp_generators
 This is my implementation of generators using C++20 coroutines
 
-For example uses, see [./coroutine_iterator.cpp]
+For example uses, see [coroutine_iterator.cpp](./coroutine_iterator.cpp)
 
 ## `generator<T, R>`
 The return object type of a generator.
