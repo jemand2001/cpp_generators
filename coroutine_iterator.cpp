@@ -35,6 +35,11 @@ generator<int> yield_from_test() {
     co_return;
 }
 
+generator<int, int> yield_from_test2() {
+    int x = co_await yield_from(non_void_iterator());
+    co_return x;
+}
+
 int main() {
     for (int i : void_iterator()) {
         std::cout << i << '\n';
@@ -53,6 +58,14 @@ int main() {
     for (int i : yield_from_test()) {
         std::cout << i << '\n';
     }
+
+    std::cout << '\n';
+
+    auto g2 = yield_from_test2();
+    for (int i : g2) {
+        std::cout << i << '\n';
+    }
+    std::cout << "return value: " << g.return_value() << '\n';
 
     return 0;
 }
