@@ -1,6 +1,7 @@
 #include <coroutine>
 #include <iostream>
 #include <stdexcept>
+#include <array>
 #include "generator.hpp"
 #include "yield_from.hpp"
 
@@ -29,7 +30,8 @@ generator<int, int> non_void_iterator() {
 }
 
 generator<int> yield_from_test() {
-    co_await yield_from{void_iterator()};
+    std::array a{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    co_await yield_from{a};
     co_return;
 }
 

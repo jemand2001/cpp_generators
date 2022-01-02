@@ -28,3 +28,11 @@ An awaitable that will insert the values of the given range into the awaiting co
 Note that the return object must support yielding multiple values at once (for example, by placing them in a queue),
 or else this will only yield the last value.
 To use, just insert a call to `co_await yield_from(my_range);` into your coroutine.
+
+For example, the following generator will yield the numbers from 1 to 10.
+```cpp
+generator<int> f() {
+    std::array a{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    co_await yield_from(a);
+}
+```
