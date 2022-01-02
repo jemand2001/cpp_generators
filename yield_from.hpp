@@ -37,3 +37,30 @@ struct yield_from {
     yield_from(Range &rng) : rng(rng) {}
     yield_from(Range &&rng) : rng(rng) {}
 };
+
+template <typename T>
+concept not_void = !std::is_void_v<T>;
+
+template <typename T, not_void R>
+struct yield_from<base::generator<T, R>> {
+    using value_type = std::remove_reference_t<T>;
+    using generator = base::generator<T, R>;
+
+    generator &gen;
+    bool await_ready() { return gen.begin() == gen.end(); }
+
+    template <typename Promise>
+    bool await_suspend(std::coroutine_handle<Promise> h) {
+        for (auto i : gen) {
+            h.promise().yield_value(i);
+        }
+        return true;
+    }
+
+    R await_resume() {
+        return gen.return_value();
+    }
+
+    yield_from(generator &gen) : gen(gen) {}
+    yield_from(generator &&gen) : gen(gen) {}
+};
