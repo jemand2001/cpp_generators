@@ -3,7 +3,7 @@ This is my implementation of generators using C++20 coroutines
 
 For example uses, see [coroutine_iterator.cpp](./coroutine_iterator.cpp)
 
-If you have suggestions, feature requests, or other comments, feel free to open an [issue](/issues) or [pull request](/pulls)
+If you have suggestions, feature requests, or other comments, feel free to open an [issue](/../../issues) or [pull request](/../../pulls)
 
 ## `generator<T, R>`
 The return object type of a generator.
