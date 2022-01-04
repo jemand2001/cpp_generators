@@ -27,7 +27,7 @@ struct _promise_base {
         return {};
     }
     void unhandled_exception(){};
-    T value() { return _values.front(); }
+    T value() const { return _values.front(); }
 
     void increment() { _values.pop_front(); }
 
@@ -83,26 +83,30 @@ struct generator {
         using value_type = T;
         using iterator_category = std::forward_iterator_tag;
         using reference = T &;
-        using difference_type = size_t;
+        using difference_type = std::ptrdiff_t;
+        using iterator_category = std::forward_iterator_tag;
 
-        [[nodiscard]] T operator*() { return handle->promise().value(); }
+        [[nodiscard]] T operator*() const { return handle->promise().value(); }
         bool operator==(iterator const &it) const {
             return it.is_sentinel && handle->done() &&
                    handle->promise().empty();
         }
-        void operator++() {
+        iterator &operator++() {
             handle->promise().increment();
             if (!handle->done())
                 (*handle)();
+            return *this;
         }
-        void operator++(int x) {
-            for (int i = 0; i < x; i++) {
-                (*this)++;
-            }
+        iterator operator++(int) {
+            auto tmp = *this;
+            ++*this;
+            return tmp;
         }
         std::coroutine_handle<promise_type> *handle;
         bool is_sentinel;
     };
+
+    static_assert(std::input_iterator<iterator>);
 
     /// TODO make the handle a shared_ptr somehow, because this isn't working
 
