@@ -84,7 +84,6 @@ struct generator {
         using iterator_category = std::forward_iterator_tag;
         using reference = T &;
         using difference_type = std::ptrdiff_t;
-        using iterator_category = std::forward_iterator_tag;
 
         [[nodiscard]] T operator*() const { return handle->promise().value(); }
         bool operator==(iterator const &it) const {
