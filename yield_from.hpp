@@ -3,6 +3,7 @@
 
 #include <coroutine>
 #include "generator.hpp"
+#include "concepts.hpp"
 
 #include <iostream>
 #include <iterator>
@@ -64,3 +65,8 @@ struct yield_from<base::generator<T, R>> {
     yield_from(generator &gen) : gen(gen) {}
     yield_from(generator &&gen) : gen(gen) {}
 };
+
+static_assert(concepts::awaitable<yield_from<std::array<int, 12>>, void, base::promise_type<int, void>>);
+static_assert(concepts::awaitable<yield_from<base::generator<int, int>>,
+                                  int,
+                                  base::promise_type<int, void>>);

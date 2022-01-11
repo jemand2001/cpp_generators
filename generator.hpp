@@ -4,6 +4,7 @@
 #include <deque>
 #include <iterator>
 #include <optional>
+#include "concepts.hpp"
 
 namespace base {
 /**
@@ -59,11 +60,16 @@ struct promise_type<T, void> : public _promise_base<T, void> {
     void return_void() {}
 };
 
+static_assert(concepts::returning_promise<promise_type<int, int>, int>);
+static_assert(concepts::void_promise<promise_type<int, void>>);
+
 template <typename T, typename R>
 struct generator {
     struct iterator;
 
     using promise_type = base::promise_type<T, R>;
+    
+    static_assert(concepts::yielding_promise<promise_type, T>);
 
     iterator begin() { return {&handle, false}; }
     iterator end() { return {nullptr, true}; }
@@ -119,3 +125,6 @@ struct generator {
     generator(std::coroutine_handle<promise_type> h) : handle(h) {}
 };
 }  // namespace base
+
+static_assert(concepts::coroutine_return_object<base::generator<int>>);
+static_assert(concepts::coroutine_return_object<base::generator<int, int>>);
