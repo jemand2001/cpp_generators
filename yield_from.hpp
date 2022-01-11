@@ -24,7 +24,7 @@ struct yield_from {
 
     bool await_ready() { return rng.begin() == rng.end(); }
 
-    template <typename Promise>
+    template <concepts::yielding_promise<value_type> Promise>
     bool await_suspend(std::coroutine_handle<Promise> h) {
         for (auto i : rng) {
             h.promise().yield_value(i);
@@ -50,7 +50,7 @@ struct yield_from<base::generator<T, R>> {
     generator &gen;
     bool await_ready() { return gen.begin() == gen.end(); }
 
-    template <typename Promise>
+    template <concepts::yielding_promise<value_type> Promise>
     bool await_suspend(std::coroutine_handle<Promise> h) {
         for (auto i : gen) {
             h.promise().yield_value(i);
