@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iterator>
 
+namespace base {
 /**
  * @brief yield the elements of a range in order
  * this should behave similarly to python's `yield from`
@@ -43,7 +44,7 @@ template <typename T>
 concept not_void = !std::is_void_v<T>;
 
 template <typename T, not_void R>
-struct yield_from<base::generator<T, R>> {
+struct yield_from<generator<T, R>> {
     using value_type = std::remove_reference_t<T>;
     using generator = base::generator<T, R>;
 
@@ -66,7 +67,8 @@ struct yield_from<base::generator<T, R>> {
     yield_from(generator &&gen) : gen(gen) {}
 };
 
-static_assert(concepts::awaitable<yield_from<std::array<int, 12>>, void, base::promise_type<int, void>>);
-static_assert(concepts::awaitable<yield_from<base::generator<int, int>>,
+static_assert(concepts::awaitable<yield_from<std::array<int, 12>>, void, _promise_type<int, void>>);
+static_assert(concepts::awaitable<yield_from<generator<int, int>>,
                                   int,
-                                  base::promise_type<int, void>>);
+                                  _promise_type<int, void>>);
+}

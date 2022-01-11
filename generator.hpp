@@ -39,9 +39,9 @@ struct _promise_base {
 };
 
 template <typename T, typename R>
-struct promise_type : public _promise_base<T, R> {
+struct _promise_type : public _promise_base<T, R> {
     generator<T, R> get_return_object() {
-        using pt = promise_type<T, R>;
+        using pt = _promise_type<T, R>;
         return {std::coroutine_handle<pt>::from_promise(*this)};
     }
     void return_value(T v) {
@@ -52,22 +52,22 @@ struct promise_type : public _promise_base<T, R> {
 };
 
 template <typename T>
-struct promise_type<T, void> : public _promise_base<T, void> {
+struct _promise_type<T, void> : public _promise_base<T, void> {
     generator<T, void> get_return_object() {
-        using pt = promise_type<T, void>;
+        using pt = _promise_type<T, void>;
         return {std::coroutine_handle<pt>::from_promise(*this)};
     }
     void return_void() {}
 };
 
-static_assert(concepts::returning_promise<promise_type<int, int>, int>);
-static_assert(concepts::void_promise<promise_type<int, void>>);
+static_assert(concepts::returning_promise<_promise_type<int, int>, int>);
+static_assert(concepts::void_promise<_promise_type<int, void>>);
 
 template <typename T, typename R>
 struct generator {
     struct iterator;
 
-    using promise_type = base::promise_type<T, R>;
+    using promise_type = _promise_type<T, R>;
     
     static_assert(concepts::yielding_promise<promise_type, T>);
 
