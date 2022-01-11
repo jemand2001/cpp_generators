@@ -16,10 +16,8 @@ namespace base {
 template <typename T, typename R = void>
 struct generator;
 
-template <typename T, typename R>
-struct promise_type;
-
-template <typename T, typename R>
+namespace detail {
+template <typename T>
 struct _promise_base {
     std::suspend_never initial_suspend() { return {}; }
     std::suspend_always final_suspend() noexcept { return {}; }
@@ -39,7 +37,7 @@ struct _promise_base {
 };
 
 template <typename T, typename R>
-struct _promise_type : public _promise_base<T, R> {
+struct _promise_type : public _promise_base<T> {
     generator<T, R> get_return_object() {
         using pt = _promise_type<T, R>;
         return {std::coroutine_handle<pt>::from_promise(*this)};
@@ -52,7 +50,7 @@ struct _promise_type : public _promise_base<T, R> {
 };
 
 template <typename T>
-struct _promise_type<T, void> : public _promise_base<T, void> {
+struct _promise_type<T, void> : public _promise_base<T> {
     generator<T, void> get_return_object() {
         using pt = _promise_type<T, void>;
         return {std::coroutine_handle<pt>::from_promise(*this)};
@@ -62,12 +60,13 @@ struct _promise_type<T, void> : public _promise_base<T, void> {
 
 static_assert(concepts::returning_promise<_promise_type<int, int>, int>);
 static_assert(concepts::void_promise<_promise_type<int, void>>);
+}
 
 template <typename T, typename R>
 struct generator {
     struct iterator;
 
-    using promise_type = _promise_type<T, R>;
+    using promise_type = detail::_promise_type<T, R>;
     
     static_assert(concepts::yielding_promise<promise_type, T>);
 

@@ -67,8 +67,8 @@ struct yield_from<generator<T, R>> {
     yield_from(generator &&gen) : gen(gen) {}
 };
 
-static_assert(concepts::awaitable<yield_from<std::array<int, 12>>, void, _promise_type<int, void>>);
+static_assert(concepts::awaitable<yield_from<std::array<int, 12>>, void, base::detail::_promise_type<int, void>>);
 static_assert(concepts::awaitable<yield_from<generator<int, int>>,
                                   int,
-                                  _promise_type<int, void>>);
+                                  base::detail::_promise_type<int, void>>);
 }
