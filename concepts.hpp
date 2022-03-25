@@ -13,10 +13,13 @@ struct is_instance : public std::false_type {};
 template <class T, template <class> class U>
 struct is_instance<U<T>, U> : public std::true_type {};
 
+template <class T, template <class> class U>
+concept instance_of = is_instance<T, U>::value;
+
 template <typename T>
 concept await_suspend_result =
     std::is_void_v<T> || std::convertible_to<T, bool> ||
-    is_instance<T, std::coroutine_handle>::value;
+    instance_of<T, std::coroutine_handle>;
 }  // namespace detail
 
 /**
