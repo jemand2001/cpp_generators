@@ -22,6 +22,33 @@ concept await_suspend_result =
     instance_of<T, std::coroutine_handle>;
 }  // namespace detail
 
+
+// SFINAE test for returning_promise
+template <typename T>
+struct has_return_value {
+    // SFINAE: If T is a class with a member named `return_value`, then
+    // decltype(&T::return_value) is a valid type, so this specialization exists. (and returns true_type)
+    template <typename U>
+    static auto test(decltype(&U::return_value)) -> std::true_type;
+    // otherwise, only this specialization exists and returns false_type.
+    template <typename>
+    static auto test(...) -> std::false_type;
+    
+    static constexpr bool value = decltype(test<T>(nullptr))::value;
+};
+
+// SFINAE test for void_promise
+// see `has_return_value` for the reason why this is a separate test.
+template <typename T>
+struct has_return_void {
+    template <typename U>
+    static auto test(decltype(&U::return_void)) -> std::true_type;
+    template <typename>
+    static auto test(...) -> std::false_type;
+    
+    static constexpr bool value = decltype(test<T>(nullptr))::value;
+};
+
 /**
  * @brief Is the first type awaitable, returning the second type, from the given promise type?
  * 
@@ -51,7 +78,7 @@ concept valid_promise = requires(P p) {
     { p.final_suspend() }
     noexcept->awaitable;
     p.unhandled_exception();
-};
+} && (has_return_value<P>::value != has_return_void<P>::value);
 
 /**
  * @brief is the type a promise for the given return object?
