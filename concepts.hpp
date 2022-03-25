@@ -93,7 +93,7 @@ concept yielding_promise = valid_promise<P> && requires(P t, V v) {
  */
 template <typename P, typename V>
 concept returning_promise = valid_promise<P> && requires(P p, V v) {
-    { p.return_value(v) } -> std::same_as<void>;
+    p.return_value(v);
 };
 
 /**
@@ -103,6 +103,6 @@ concept returning_promise = valid_promise<P> && requires(P p, V v) {
  */
 template <typename P>
 concept void_promise = valid_promise<P> && requires(P p) {
-    { p.return_void() } -> std::same_as<void>;
+    p.return_void();
 };
 }  // namespace concepts
