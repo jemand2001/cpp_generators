@@ -115,12 +115,7 @@ struct generator {
     /// TODO make the handle a shared_ptr somehow, because this isn't working
 
     ~generator() { handle.destroy(); }
-    generator(const generator<T, R> &other)
-        : handle(std::coroutine_handle<promise_type>::from_promise(
-              other.handle.promise())) {}
-    generator(generator<T, R> &&other)
-        : handle(std::coroutine_handle<promise_type>::from_promise(
-              other.handle.promise())) {}
+    generator(const generator<T, R>&) = delete;
     generator(std::coroutine_handle<promise_type> h) : handle(h) {}
 };
 }  // namespace base
