@@ -20,7 +20,6 @@ template <typename T>
 concept await_suspend_result =
     std::is_void_v<T> || std::convertible_to<T, bool> ||
     instance_of<T, std::coroutine_handle>;
-}  // namespace detail
 
 
 // SFINAE test for returning_promise
@@ -48,6 +47,7 @@ struct has_return_void {
     
     static constexpr bool value = decltype(test<T>(nullptr))::value;
 };
+}  // namespace detail
 
 /**
  * @brief Is the first type awaitable, returning the second type, from the given promise type?
@@ -78,7 +78,7 @@ concept valid_promise = requires(P p) {
     { p.final_suspend() }
     noexcept->awaitable;
     p.unhandled_exception();
-} && (has_return_value<P>::value != has_return_void<P>::value);
+} && (detail::has_return_value<P>::value != detail::has_return_void<P>::value);
 
 /**
  * @brief is the type a promise for the given return object?
