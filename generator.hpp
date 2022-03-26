@@ -62,6 +62,25 @@ static_assert(concepts::returning_promise<_promise_type<int, int>, int>);
 static_assert(concepts::void_promise<_promise_type<int, void>>);
 }
 
+/**
+ * @brief A coroutine return object representing a range whose values are computed during iteration
+ * 
+ * example usage:
+ * ```cpp
+ * generator<int> void_gen() {
+ *   co_yield 1;
+ *   co_yield 2;
+ * }
+ * 
+ * generator<int, int> int_gen() {
+ *   co_yield 1;
+ *   co_yield 2;
+ *   co_return 12;
+ * }
+ * ```
+ * @tparam T the type of the yielded values (given to `co_yield`)
+ * @tparam R the return type (given to `co_return`)
+ */
 template <typename T, typename R>
 struct generator {
     struct iterator;
@@ -112,8 +131,6 @@ struct generator {
 
     static_assert(std::input_iterator<iterator>);
 
-    /// TODO make the handle a shared_ptr somehow, because this isn't working
-
     ~generator() { handle.destroy(); }
     generator(const generator<T, R>&) = delete;
     generator(std::coroutine_handle<promise_type> h) : handle(h) {}
@@ -121,4 +138,6 @@ struct generator {
 }  // namespace base
 
 static_assert(concepts::coroutine_return_object<base::generator<int>>);
+static_assert(std::ranges::forward_range<base::generator<int>>);
 static_assert(concepts::coroutine_return_object<base::generator<int, int>>);
+static_assert(std::ranges::forward_range<base::generator<int, int>>);
